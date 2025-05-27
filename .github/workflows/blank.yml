@@ -1,0 +1,40 @@
+# .github/workflows/ci.yml
+name: CI
+
+on:
+  push:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Récupérer le code
+      - uses: actions/checkout@v3
+
+      # 2. Construire, vérifier l'existence du binaire, nettoyer, lancer les tests, nettoyer à nouveau
+      - name: Build, test et nettoyage
+        shell: bash
+        run: |
+          set -e
+
+          # Extraire la variable NAME depuis le Makefile
+          NAME=$(grep -E '^NAME\s*[:]?=' Makefile | head -n1 | sed 's/.*=[[:space:]]*//')
+          echo "Nom du binaire détecté : $NAME"
+
+          # make re
+          make re
+
+          # Vérifier que le binaire existe
+          if [ ! -f "$NAME" ]; then
+            echo "❌ Binaire '$NAME' non trouvé après 'make re'"
+            exit 1
+          fi
+
+          # make fclean
+          make fclean
+
+          # lancer les tests
+          make tests_run
+
+          # nettoyage final
+          make fclean
