@@ -10,7 +10,7 @@
 
 int factorial(int n);
 
-int smain(int ac, char **av)
+int main(int ac, char **av)
 {
     if (ac != 2 || std::string(av[1]) == "--help") {
         std::cerr << "Usage: " << av[0] << " <number>" << std::endl;
