@@ -1,0 +1,54 @@
+# .github/workflows/ci.yml
+name: CI
+
+on:
+  push:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Récupérer le code
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2. Extraire la variable NAME depuis le Makefile
+      - name: Get binary name
+        id: get-name
+        shell: bash
+        run: |
+          NAME=$(grep -E '^NAME\s*[:]?=' Makefile | head -n1 | sed 's/.*=[[:space:]]*//')
+          echo "Detected binary name: $NAME"
+          echo "name=$NAME" >> $GITHUB_OUTPUT
+
+      # 3. Compilation (make re)
+      - name: Build (make re)
+        shell: bash
+        run: make re
+
+      # 4. Vérification de l'existence du binaire
+      - name: Check binary exists
+        shell: bash
+        run: |
+          BIN="${{ steps.get-name.outputs.name }}"
+          echo "Checking for binary '$BIN'..."
+          if [ ! -f "$BIN" ]; then
+            echo "❌ Binary '$BIN' not found after make re"
+            exit 1
+          fi
+
+      # 5. Nettoyage après build (make fclean)
+      - name: Clean after build (make fclean)
+        shell: bash
+        run: make fclean
+
+      # 6. Lancement des tests (make tests_run)
+      - name: Run tests (make tests_run)
+        shell: bash
+        run: make tests_run
+
+      # 7. Nettoyage après tests (make fclean)
+      - name: Clean after tests (make fclean)
+        shell: bash
+        run: make fclean
+        
