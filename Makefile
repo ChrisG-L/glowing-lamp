@@ -6,7 +6,7 @@
 ##
 
 SRC_MAIN =	main.cpp
-SRC =	factoria.cpp \
+SRC =	factorial.cpp \
 
 SRC_T = test1.cpp \
 
