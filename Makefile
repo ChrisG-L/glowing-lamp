@@ -8,7 +8,7 @@
 SRC_MAIN =	main.cpp
 SRC =	factorial.cpp \
 
-SRC_T = test1.cpp \
+SRC_T = test.cpp \
 
 NAME = factorial
 
